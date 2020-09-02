@@ -3,23 +3,23 @@
 % Matrices and vectors
 % 1
 s = rng;
-bigVec = 5 .* randn(1000, 1);
+bigVec = 5 .* randn(1000000, 1);
 % stats = [mean(bigVec) std(bigVec) var(bigVec)] to check
 
 % 2
 sz = size(bigVec);
 tic
 for i = 1:sz(1)
-   bigVec(i) + 1; % should I save this in the vector?
+   bigVec(i) = bigVec(i) + 1; 
 end
 toc
 
 % 3
-start = cputime;
-bigVec = bigVec + 1;
-elapsed = cputime - start;
-fprintf("%f seconds without for loop.\n", elapsed)
-% why does this keep returning 0.000000?
+start = clock;
+bigVec(:) = bigVec(:) + 1;
+endT = clock;
+elapsed = etime(endT,  start);
+disp(elapsed);
 
 % 4
 x = 0:2:98;
@@ -42,7 +42,7 @@ for i = 1:10
     end
 end
 
-% 7
+% 5
 A = rand(5,3);
 B = rand(3,5);
 result = zeros(5,5);
@@ -133,11 +133,16 @@ saveas(gcf, 'new_image.png');
 % 19
 figure;
 % compute scalar average pixel value for each channel
-r = I(:,:,1);
-g = I(:,:,2);
-b = I(:,:,3);
-% compute avg
-av = (r+g+b)/3;
-I = I(:,:,:) - av;
-imshow(I)
+I3 = I;
+r = mean(I3(:,:,1), 'all');
+g = mean(I3(:,:,2), 'all');
+b = mean(I3(:,:,3), 'all');
+disp(r);
+disp(g);
+disp(b);
+I3(:,:,1) = I3(:,:,1) - r;
+I3(:,:,2) = I3(:,:,2) - g;
+I3(:,:,3) = I3(:,:,3) - b;
+
+imshow(I3)
 saveas(gcf, 'mean_sub.png')
