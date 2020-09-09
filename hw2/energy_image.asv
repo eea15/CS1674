@@ -1,0 +1,34 @@
+% Emma Akbari (eea21) hw2
+% Part III: Content-Aware Image Resizing - 1
+function [energyImage, Ix, Iy] = energy_image(im)
+
+% read in matrix im, conv to grayscale
+%im = imread('cardinal1.jpg'); debug
+im = rgb2gray(im);
+im = double(im); 
+
+% vertical gradient filter
+v = [1 0 -1; 2 0 -2; 1 0 -1];
+% horizontal
+h = transpose(v);
+
+% compute energy of each pixel using x,y gradients
+% compute Ix, Iy gradients in x/y dirs using imfilter
+%figure;
+Ix = imfilter(im,h);
+fprintf('Ix'); size(Ix)
+%imshow(Ix);
+%figure;
+Iy = imfilter(im,v);
+fprintf('Iy'); size(Iy)
+%imshow(Iy);
+% compute energyImage using sqrt((dI/dx)^2+(dI/dy)^2)
+%figure;
+energyImage = (diff(Ix)) .^ 2;
+f
+size(energyImage)
+energyImage = energyImage + (diff(Iy) .^ 2);
+size(energyImage)
+energyImage = sqrtm(energyImage);
+%imagesc(energyImage);
+
