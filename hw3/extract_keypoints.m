@@ -57,6 +57,18 @@ thresh = mean2(R) * 5; % threshold
 corners = R > thresh;
 R(corners~=1) = 0; % is this right??
 
+% store intermediate list of x,y corners
+x = [];
+y = [];
+for i = 1:size(R,1)
+    for j = 1:size(R,2)
+        if(R(i,j) ~= 0)
+            y = horzcat(y,i); % rows
+            x = horzcat(x,j); % cols
+        end
+    end
+end
+
 % d: non-maximum suppression
 
 % track keypoints whose R score <= 8 neighbors
@@ -66,15 +78,39 @@ removeC = []; % col indices to remove
 % loop thru valid R(i,j)
 %   compare to 8 neighbors
 %   if <= any neighbor, add to removeR/C
-% ---> continue here!! for i = 2:
+for i = 2:size(im,1)-1 % rows
+    start_r = i - 1;
+    end_r = i + 1;
+   
+    for j = 2:size(im,2)-1 % cols
+        start_c = j - 1;
+        end_c = j + 1;
+        
+        % compare with 8 neighbors
+        for x = start_r:end_r
+            for y = start_c:end_c
+                if(i == x && j == y)
+                    continue
+                else
+                    if(R(i,j) <= R(x,y))
+                        removeR = horzcat(removeR,i);
+                        removeC = horzcat(removeC,j);
+                    end
+                end
+            end
+        end % end inner double for loop
+        
+    end
+ end % end outer double for loop
 
 % track keypoints w/o 8 neighbors
 % left and right borders
-% insert concatenations here!!!
-removeR = [1:size(im,1),1:size(im,1)];
+tempR = [1:size(im,1),1:size(im,1)];
+removeR = horzcat(removeR,tempR);
 a = repmat([1],1,size(im,1));
 b = repmat([size(im,2)],1,size(im,1));
-removeC = horzcat(a,b);
+tempC = horzcat(a,b);
+removeC = horzcat(removeC,tempC);
 assert(size(removeR,2) == size(removeC,2));
 
 % top and bottom borders
@@ -85,6 +121,18 @@ removeC = horzcat(removeC,[1:size(im,2),1:size(im,2)]);
 assert(size(removeR,2) == size(removeC,2));
 
 % remove suppressed keypoints
+for i = 1:size(x) % loop thru x/y keypoints
+    for j = 1:size(removeC) % loop thru keypoints to remove
+        if(y(i) == removeR(i) && x(i) == removeC(i))
+            y(i) = [];
+            x(i) = [];
+            removeR(i) = [];
+            removeC(i) = [];
+        end
+    end
+end
+
+
 
 
 
