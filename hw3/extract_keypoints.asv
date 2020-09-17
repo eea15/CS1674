@@ -57,19 +57,19 @@ end
 % corners = R > thresh;
 % R(corners~=1) = 0; 
 
-%pixels = size(R,1) * size(R,2) * 0.01; % top 1% of keypoints
+pixels = size(R,1) * size(R,2) * 0.01; % top 1% of keypoints
 % R = maxk(R,pixels);
 
 
 % get top 1% for keypoints
 [A,I] = sort(R(:),1,'descend');
 max_vals = A(1:pixels);
-[y,x] = ind2sub(size(),I(1:size(R(:)); 
+[y,x] = ind2sub(size(R),I(1:pixels)); 
 
-size(y)
-size(x)
-y(50,1)
-pause
+% size(y)
+% size(x)
+% y(50,1)
+% pause
 % store intermediate list of x,y keypoints
 % x = [];
 % y = [];
@@ -78,7 +78,6 @@ scores = [];
 for i = 1:size(x)
     scores = vertcat(scores,R(y(i),x(i)));
 end
-
 
 % for i = 1:size(R,1)
 %     for j = 1:size(R,2)
@@ -125,21 +124,20 @@ size(removeR)
 
 % remove values
 for i = 1:size(x,1)
-    % all([removeR(i) removeC(i)] == [y(j) x(j)])
-    scoreToFind = R(removeR(i),removeC(i));
-    index = find(scores==scoreToFind);
-    scores(index) = [];
-    x(index) = [];
-    y(index) = [];
+    for j = 1:size(x,1)
+        all([removeR(i) removeC(i)] == [y(j) x(j)]);
+    
+%     scoreToFind = R(removeR(i),removeC(i));
+%     index = find(scores==scoreToFind);
+%     scores(index) = [];
+%     x(index) = [];
+%     y(index) = [];
+    end
 end
-% 
-% figure;
-% imagesc(im);
-% hold on;
-% for i = 1:length(x)
-%      plot(x(i), y(i), 'ro');%, 'MarkerSize', scores(i) / 10000000000000000000);
-% end
-% hold off; 
+
+y = removeR;
+x = removeC;
+
 
 
 

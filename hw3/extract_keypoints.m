@@ -51,58 +51,17 @@ for i = 3:(size(im,1) - 2) % rows
     end
 end
 
-% c: threshold for R
-% thresh = mean2(R(10:size(im,1)-10,10:size(im,2)-10))
-% thresh = rAvg * 5 % threshold
-% corners = R > thresh;
-% R(corners~=1) = 0; 
-
-pixels = size(R,1) * size(R,2) * 0.01; % top 1% of keypoints
-% R = maxk(R,pixels);
-
-
-% get top 1% for keypoints
+% c: get top 1% for keypoints
+pixels = size(R,1) * size(R,2) * 0.01; 
 [A,I] = sort(R(:),1,'descend');
 max_vals = A(1:pixels);
 [y,x] = ind2sub(size(R),I(1:pixels)); 
-
-% size(y)
-% size(x)
-% y(50,1)
-% pause
-% store intermediate list of x,y keypoints
-% x = [];
-% y = [];
 
 scores = [];
 for i = 1:size(x)
     scores = vertcat(scores,R(y(i),x(i)));
 end
 
-% for i = 1:size(R,1)
-%     for j = 1:size(R,2)
-%         if(R(i,j) > 0)
-% %             y = horzcat(y,i); % rows
-% %             x = horzcat(x,j); % cols
-%             scores = vertcat(scores,R(i,j));
-%         end
-%     end
-% end
-
-% transpose to vertical
-% y = y';
-% x = x';
-% scores = scores';
-
-figure;
-imagesc(im);
-hold on;
-for i = 1:length(x)
-     plot(x(i), y(i), 'ro');%, 'MarkerSize', scores(i) / 10000000000000000000);
-end
-hold off; 
-
-pause;
 % d: non-maximum suppression
 
 % track keypoints whose R score <= 8 neighbors
@@ -119,27 +78,26 @@ for i = 1:length(x)
     end
 end
 
-size(scores)
-size(removeR)
-
 % remove values
 for i = 1:size(x,1)
-    % all([removeR(i) removeC(i)] == [y(j) x(j)])
-    scoreToFind = R(removeR(i),removeC(i));
-    index = find(scores==scoreToFind);
-    scores(index) = [];
-    x(index) = [];
-    y(index) = [];
+    for j = 1:size(x,1)
+        all([removeR(i) removeC(i)] == [y(j) x(j)]);
+    end
 end
-% 
-% figure;
-% imagesc(im);
-% hold on;
-% for i = 1:length(x)
-%      plot(x(i), y(i), 'ro');%, 'MarkerSize', scores(i) / 10000000000000000000);
-% end
-% hold off; 
 
+y = removeR;
+x = removeC;
+
+% display
+figure;
+imagesc(im);
+hold on;
+for i = 1:length(x)
+     plot(x(i), y(i), 'ro');
+end
+hold off; 
+
+%saveas(gcf,'vis3.png');
 
 
 
