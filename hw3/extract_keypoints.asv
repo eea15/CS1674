@@ -1,7 +1,7 @@
 % Emma Akbari (eea21) hw3
 function [x, y, scores, Ih, Iv] = extract_keypoints(image)
 
-% a: preprocessings
+% a: preprocessing
 k = 0.05;
 w = 5; % window size 5
 halfW = floor(5/2);
@@ -46,91 +46,100 @@ for i = 3:(size(im,1) - 2) % rows
             end
         end
         
-        
         % compute R(i,j)
         R(i,j) = det(M) - k*(trace(M) .^ 2);
     end
 end
 
 % c: threshold for R
-thresh = mean2(R) * 5; % threshold
-corners = R > thresh;
-R(corners~=1) = 0; % is this right??
+% thresh = mean2(R(10:size(im,1)-10,10:size(im,2)-10))
+% thresh = rAvg * 5 % threshold
+% corners = R > thresh;
+% R(corners~=1) = 0; 
 
-% store intermediate list of x,y corners
-x = [];
-y = [];
-for i = 1:R(size,1)
-    for j = 1:R(size,2)
-        if(R(i,j) ~= 0)
-            y = horzcat(y,i); % rows
-            x = horzcat(x,j); % cols
-        end
-    end
+%pixels = size(R,1) * size(R,2) * 0.01; % top 1% of keypoints
+% R = maxk(R,pixels);
+
+
+% get top 1% for keypoints
+[A,I] = sort(R(:),1,'descend');
+max_vals = A(1:pixels);
+[y,x] = ind2sub(size(),I(1:size(R(:)); 
+
+size(y)
+size(x)
+y(50,1)
+pause
+% store intermediate list of x,y keypoints
+% x = [];
+% y = [];
+
+scores = [];
+for i = 1:size(x)
+    scores = vertcat(scores,R(y(i),x(i)));
 end
 
+
+% for i = 1:size(R,1)
+%     for j = 1:size(R,2)
+%         if(R(i,j) > 0)
+% %             y = horzcat(y,i); % rows
+% %             x = horzcat(x,j); % cols
+%             scores = vertcat(scores,R(i,j));
+%         end
+%     end
+% end
+
+% transpose to vertical
+% y = y';
+% x = x';
+% scores = scores';
+
+figure;
+imagesc(im);
+hold on;
+for i = 1:length(x)
+     plot(x(i), y(i), 'ro');%, 'MarkerSize', scores(i) / 10000000000000000000);
+end
+hold off; 
+
+pause;
 % d: non-maximum suppression
 
 % track keypoints whose R score <= 8 neighbors
 removeR = []; % row indices to remove
 removeC = []; % col indices to remove
 
-% loop thru valid R(i,j)
-%   compare to 8 neighbors
-%   if <= any neighbor, add to removeR/C
-for i = 2:size(im,1)-1 % rows
-    start_r = i - 1;
-    end_r = i + 1;
-   
-    for j = 2:size(im,2)-1 % cols
-        start_c = j - 1;
-        end_c = j + 1;
-        
-        % compare with 8 neighbors
-        for x = start_r:end_r
-            for y = start_c:end_c
-                if(i == x && j == y)
-                    continue
-                else
-                    if(R(i,j) <= R(x,y))
-                        removeR = horzcat(removeR,i);
-                        removeC = horzcat(removeC,j);
-                    end
-                end
-            end
-        end % end inner double for loop
-        
+% loop thru valid R(i,j), compare to 8 neighbors
+for i = 1:length(x)
+    if(x(i) < halfW || x(i) > size(im,1) - halfW ...
+            || y(i) < halfW || y(i) > size(image,1) - halfW || ...
+            max(R(y(i)-1:y(i)+1,x(i)-1:x(i)+1)) ~= R(y(i),x(i)))
+        removeR = vertcat(removeR,y(i));
+        removeC = vertcat(removeC,x(i));
     end
- end % end outer double for loop
-
-% track keypoints w/o 8 neighbors
-% left and right borders
-tempR = [1:size(im,1),1:size(im,1)];
-removeR = horzcat(removeR,tempR);
-a = repmat([1],1,size(im,1));
-b = repmat([size(im,2)],1,size(im,1));
-tempC = horzcat(a,b);
-removeC = horzcat(removeC,tempC);
-assert(size(removeR,2) == size(removeC,2));
-
-% top and bottom borders
-a = repmat([1],1,size(im,2));
-b = repmat([size(im,1)],1,size(im,2));
-removeR = horzcat(removeR,a,b);
-removeC = horzcat(removeC,[1:size(im,2),1:size(im,2)]);
-assert(size(removeR,2) == size(removeC,2));
-
-% remove suppressed keypoints
-for i = 1:size(x)
-    for j = 1:size(removeC)
-        if(y(i) == removeR(i)
 end
 
-% store intermediate x,y scores before non-max suppression
-% store list of inds to remove
-% remove after looping
+size(scores)
+size(removeR)
 
-
+% remove values
+for i = 1:size(x,1)
+    % all([removeR(i) removeC(i)] == [y(j) x(j)])
+    scoreToFind = R(removeR(i),removeC(i));
+    index = find(scores==scoreToFind);
+    scores(index) = [];
+    x(index) = [];
+    y(index) = [];
+end
+% 
+% figure;
+% imagesc(im);
+% hold on;
+% for i = 1:length(x)
+%      plot(x(i), y(i), 'ro');%, 'MarkerSize', scores(i) / 10000000000000000000);
+% end
+% hold off; 
 
 
 
