@@ -1,0 +1,76 @@
+% Emma Akbari (eea21) hw4
+function [features] = compute_features(x, y, scores, Ix, Iy)
+% inputs: x = nx1 keypoint vector in horiz dir/columns
+%         y = nx1 keypoint vector in vert dir/rows
+%         scores = R scores
+%         Ix = horizontal gradient
+%         Iy = vertical gradient
+% output: Nxd matrix (each row contains d-dim descriptor for nth keypoint
+
+% Part I: Feature Description
+% 1: remove pixels w/<5 neighbors on any side
+for i = size(x,1):-1:1
+    if(y(i) < 6 || y(i) > size(Ix, 1) - 5 || ...
+            x(i) < 6 || x(i) > size(Ix, 2) - 5)
+        y(i) = [];
+        x(i) = [];
+        scores(i) = [];
+    end
+end
+
+% 2: compute gradient magnitude/angle for each (x,y)
+m = zeros(size(x,1),1); % magnitude
+d = zeros(size(x,1),1); % direction
+
+for i = 1:size(x,1)
+    m(i,1) = sqrt((Ix(y(i),x(i)))^2 + (Iy(y(i),x(i)))^2);
+    % ignore angle if magnitude = 0
+    if(m(i,1) ~= 0)
+        d(i,1) = atand((Iy(y(i),x(i)))/(Ix(y(i),x(i))));
+    end
+end
+
+% 3: quantize gradient orientations in 8 bins
+o = zeros(size(Ix,1),size(Ix,2)); % matrix of orientations corresponding to image
+for i = 1:size(d,1)
+    angle = d(i);
+    
+    if(angle >= -90 && angle < -67.5)
+        o(y(i),x(i)) = 1;
+    elseif(angle >= -67.5 && angle < -45)
+        o(y(i),x(i)) = 2;
+    elseif(angle >= -45 && angle < -22.5)
+        o(y(i),x(i)) = 3;
+    elseif(angle >= -22.5 && angle < 0)
+        o(y(i),x(i)) = 4;
+    elseif(angle >= 0 && angle < 22.5)
+        o(y(i),x(i)) = 5;
+    elseif(angle >= 22.5 && angle < 45)
+        o(y(i),x(i)) = 6;
+    elseif(angle >= 45 && angle < 67.5)
+        o(y(i),x(i)) = 7;
+    elseif(angle >= 67.5 && angle <= 90)
+        o(y(i),x(i)) = 8;
+    else
+        fprintf("error: invalid angle");
+    end
+end
+
+% 4: populate the SIFT histogram
+hist = zeros(1,8);
+for i = 1:size(d,1)
+    bin = o(y(i),x(i));
+    hist(1,bin) = hist(1,bin) + m(i);
+end
+
+% 5: normalize and clip
+hist = hist/sum(hist);
+for i = 1:size(hist)
+    if(hist(i) > 0.2)
+        hist(i) = 0.2
+    end
+end
+hist = hist/sum(hist);
+
+% next up: fix above to implement as window over each feature
+% see slide 68 :)
