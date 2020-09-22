@@ -95,3 +95,4 @@ for i = 1:size(hist,1)
      hist(i,:) = hist(i,:)/sum(hist(i,:));
 end
 
+features = hist;
