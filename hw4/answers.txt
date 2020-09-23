@@ -1,3 +1,46 @@
 Emma Akbari (eea21) hw4
 
-The average within-class distance should be smaller than between-class.
+1. For which of the three representations is the within-between ratio smallest?
+The BOW with k=5 has the smallest ratio (Ratio for BOW k=10: 0.375394).
+
+2. Does the answer to this question depend on the value of k that you use?
+Yes; when the value of k=2 the lowest ratio is actually texture mean (Ratio for texture mean: 0.563118).
+
+3. Does it depend on the number of keypoints you extract? (Try 500, 1000, 2000, 3000.)
+Yes, as the number of keypoints increases, the ratios for BOW change:
+
+Top 500 keypoints:
+Ratio for BOW k=2: 0.944239
+Ratio for BOW k=5: 0.394857
+Ratio for BOW k=10: 0.375394
+Ratio for BOW k=50: 0.426348
+Ratio for BOW k=100: 0.441640
+Ratio for BOW k=200: 0.432668
+Ratio for texture concat: 0.942568
+Ratio for texture mean: 0.563118
+
+Top 1000 keypoints:
+Ratio for BOW k=2: 0.580675
+Ratio for BOW k=5: 0.386737
+Ratio for BOW k=10: 0.354680
+Ratio for BOW k=50: 0.367120
+Ratio for BOW k=100: 0.403516
+Ratio for BOW k=200: 0.384978
+Ratio for texture concat: 0.942568
+Ratio for texture mean: 0.563118
+
+Top 1500 keypoints:
+Ratio for BOW k=2: 1.165606
+Ratio for BOW k=5: 0.346804
+Ratio for BOW k=10: 0.347342
+Ratio for BOW k=50: 0.367656
+Ratio for BOW k=100: 0.380025
+Ratio for BOW k=200: 0.367653
+Ratio for texture concat: 0.942568
+Ratio for texture mean: 0.563118
+
+4. Which of the three types of descriptors that you used is the best one? How can you tell?
+The ratio for BOW k=5 and abover works the best because it consistently produces the smallest within-between representation. This means it better differentiates between images.
+
+5. Is this what you expected? Why or why not?
+Yes, I expected the BOW representation to work best because it is flexible to things like geometry viewpoint.

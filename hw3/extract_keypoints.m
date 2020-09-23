@@ -43,7 +43,10 @@ average = mean(notneg,'all');
 %average = average./size(R,2);
 %average = sum(R,'all')/size(R)*size(R,2);
 
-b = R > 5.* average;
+b = sort(R(:), 'descend');
+%b = b(1:size(R(:),1)*.01);
+b = b(1:1500);
+b = ismember(R,b);
 y=1;
 scores=zeros(0,0);
 x=zeros(0,0);
