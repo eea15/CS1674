@@ -1,0 +1,3 @@
+Emma Akbari (eea21) hw4
+
+The average within-class distance should be smaller than between-class.

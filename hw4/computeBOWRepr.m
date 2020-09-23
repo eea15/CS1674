@@ -24,5 +24,5 @@ for i = 1:size(closestCluster,1)
 end
 
 % 4: normalize histogram
-bow_repr(1,:) = bow_repr(1,:)/sum(bow_repr(1,:))
+bow_repr(1,:) = bow_repr(1,:)/sum(bow_repr(1,:));
 

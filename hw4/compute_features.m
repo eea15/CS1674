@@ -7,6 +7,9 @@ function [features] = compute_features(x, y, scores, Ix, Iy)
 %         Iy = vertical gradient
 % output: Nxd matrix (each row contains d-dim descriptor for nth keypoint
 
+Ix = double(Ix);
+Iy = double(Iy);
+
 % Part I: Feature Description
 % 1: remove pixels w/<5 neighbors on any side
 for i = size(x,1):-1:1
@@ -21,6 +24,7 @@ end
 % 2: compute gradient magnitude/angle for each feature/neighbors
 m = zeros(size(Ix,1),size(Ix,2)); % magnitude
 d = zeros(size(Ix,1),size(Ix,2)); % direction
+
 
 for i = 1:size(x,1) % for all keypoints
     r = y(i); % row

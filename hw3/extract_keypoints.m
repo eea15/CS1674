@@ -1,103 +1,85 @@
-% Emma Akbari (eea21) hw3
 function [x, y, scores, Ih, Iv] = extract_keypoints(image)
 
-% a: preprocessing
-k = 0.05;
-w = 5; % window size 5
-halfW = floor(5/2);
+image=rgb2gray(image);
+k=.05;
+w=5;
+g=[1 0 -1;2 0 -2;1 0 1];
+Ih=imfilter(image, g);
+Iv=imfilter(image, g');
 
-im = imread(image);
-im = rgb2gray(im);
-im = double(im); 
+cur=size(image);
+R = zeros(cur);
 
-% horizontal gradient filter
-h = [1 0 -1; 2 0 -2; 1 0 -1];
-% vertical
-v = transpose(h);
+Ih2=Ih.^2;
+Iv2=Iv.^2;
+Ivh=Iv .* Ih;
 
-% compute horizontal & vertical image gradients
-Ih = imfilter(im,h);
-Iv = imfilter(im,v);
-
-% initialize matrix R
-R = inf(size(im,1), size(im,2)) * -1;
-
-% b: compute R(i,j) scores
-
-% loop thru all image pixels
-for i = 3:(size(im,1) - 2) % rows
-    start_r = i - halfW;
-    end_r = i + halfW;
-    
-    for j = 3:(size(im,2) - 2) % cols
-        M = zeros(2,2);
-        % for each neighbor less than half_window_size
-        start_c = j - halfW;
-        end_c = j + halfW;
-
-        % compute energy of each pixel using x,y gradients
-        % loop version
-        for x = start_r:end_r
-            for y = start_c:end_c
-                ih = Ih(x,y);
-                iv = Iv(x,y);
-                % compute M
-                M = M + [ih ^ 2, ih * iv; ih * iv, iv ^ 2];
-            end
-        end
+for i=1:size(image,1)
+    for j=1:size(image,2)
         
-        % compute R(i,j)
-        R(i,j) = det(M) - k*(trace(M) .^ 2);
+        if i<3
+            R(i,j) = -inf;
+        elseif i>size(R,1)-3
+            R(i,j) = -inf;
+        elseif (j<3)  
+            R(i,j) = -inf;
+        elseif (j>size(R,2)-3)
+            R(i,j) = -inf;
+        else
+            twobytwo=[0 0; 0 0];
+            M=twobytwo;
+            M(1,1)=sum(Ih2(i-2:i+2,j-2:j+2), 'all');
+            M(2,2)=sum(Iv2(i-2:i+2,j-2:j+2), 'all');
+            M(1,2) = sum(Ivh(i-2:i+2,j-2:j+2), 'all');
+            M(2,1) = sum(Ivh(i-2:i+2,j-2:j+2), 'all');
+
+            R(i,j)=det(M) - k.*(trace(M).^2) ;
+        end
     end
 end
+notneg = R>-inf;
+average = mean(notneg,'all');
+%average = s./size(R);
+%average = average./size(R,2);
+%average = sum(R,'all')/size(R)*size(R,2);
 
-% c: get top 1% for keypoints
-pixels = size(R,1) * size(R,2) * 0.01; 
-[A,I] = sort(R(:),1,'descend');
-max_vals = A(1:pixels);
-[y,x] = ind2sub(size(R),I(1:pixels)); 
-
-scores = [];
-for i = 1:size(x)
-    scores = vertcat(scores,R(y(i),x(i)));
-end
-
-% d: non-maximum suppression
-
-% track keypoints whose R score <= 8 neighbors
-removeR = []; % row indices to remove
-removeC = []; % col indices to remove
-
-% loop thru valid R(i,j), compare to 8 neighbors
-for i = 1:length(x)
-    if(x(i) < halfW || x(i) > size(im,1) - halfW ...
-            || y(i) < halfW || y(i) > size(image,1) - halfW || ...
-            max(R(y(i)-1:y(i)+1,x(i)-1:x(i)+1)) ~= R(y(i),x(i)))
-        removeR = vertcat(removeR,y(i));
-        removeC = vertcat(removeC,x(i));
+b = R > 5.* average;
+y=1;
+scores=zeros(0,0);
+x=zeros(0,0);
+y=zeros(0,0);
+for f=1:size(b)
+    for g=1:size(b,2)
+        if b(f,g) == 1
+            for i=-1:1
+                for j=-1:1
+                    if(R(f+i, g+j)> R(f,g))
+                        b(f,g) = 0;
+                    end
+                end
+            end
+        end 
+        if b(f,g) == 1
+            scores = [scores; R(f,g)];
+            x = [x; f];
+            y = [y; g];
+            
+        end 
     end
 end
-
-% remove values
-for i = 1:size(x,1)
-    for j = 1:size(x,1)
-        all([removeR(i) removeC(i)] == [y(j) x(j)]);
-    end
-end
-
-y = removeR;
-x = removeC;
-
-% display
 figure;
-imagesc(im);
+imshow(image);
 hold on;
-for i = 1:length(x)
-     plot(x(i), y(i), 'ro');
+for i=1:size(x)
+    plot(y(i), x(i), 'ro', 'MarkerSize', scores(i) / 1000000);
 end
-hold off; 
+hold off;
 
-%saveas(gcf,'vis3.png');
+end
+
+
+
+
 
 
 

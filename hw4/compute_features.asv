@@ -7,6 +7,9 @@ function [features] = compute_features(x, y, scores, Ix, Iy)
 %         Iy = vertical gradient
 % output: Nxd matrix (each row contains d-dim descriptor for nth keypoint
 
+Ix = double(Ix);
+Iy = double(Iy);
+
 % Part I: Feature Description
 % 1: remove pixels w/<5 neighbors on any side
 for i = size(x,1):-1:1
@@ -22,21 +25,15 @@ end
 m = zeros(size(Ix,1),size(Ix,2)); % magnitude
 d = zeros(size(Ix,1),size(Ix,2)); % direction
 
+
 for i = 1:size(x,1) % for all keypoints
     r = y(i); % row
     c = x(i); % col
-    m((r-5:r+5),(c-5:c+5)) = sqrt((Ix(r,c))^2 + (Iy(r,c)^2));
+    m((r-5:r+5),(c-5:c+5)) = sqrtm((Ix(r-5:r+5,c-5:c+5)).^2 + (Iy(r-5:r+5,c-5:c+5).^2));
     % ignore angle if magnitude = 0
-    % change this?
-    r = y(i); % row
-    c = x(i); % col
-    
-    % go thru 11x11 window
-%     for p = r-5:r+5
-%         for q = c-5:c+5
-%     if(m((r-5:r+5),(c-5:c+5)) ~= 0) 
-%         d((r-5:r+5),(c-5:c+5)) = atand((Iy(r,c))/(Ix(r,c)));
-%     end
+     if(m((r-5:r+5),(c-5:c+5)) ~= 0) 
+         d((r-5:r+5),(c-5:c+5)) = atand((Iy(r-5:r+5,c-5:c+5))./(Ix(r-5:r+5,c-5:c+5)));
+     end
 end
 
 % 3: quantize gradient orientations in 8 bins
@@ -73,10 +70,6 @@ for i = 1:size(x,1)
     end
 end
 
-% r = y(250);
-% c = x(250);
-% o(r-5:r+5,c-1:c+5)
-
 % 4: populate the SIFT histogram
 hist = zeros(size(x,1),8);
 for i = 1:size(x,1)
@@ -89,16 +82,12 @@ for i = 1:size(x,1)
             hist(i,bin) = hist(i,bin) + m(p,q);
         end
     end
-    
-    hist(i) = hist(i)/sum(hist(i));
 end
 
-hist(400,:)
-
 % 5: normalize and clip
-% for i = 1:size(hist,1)
-%     hist(i) = hist(i)/sum(hist(i));
-% end
+for i = 1:size(hist,1)
+     hist(i,:) = hist(i,:)/sum(hist(i,:));
+end
 for i = 1:size(hist,1)
     for j = 1:8
         if(hist(i,j) > 0.2)
@@ -107,10 +96,7 @@ for i = 1:size(hist,1)
     end
 end
 for i = 1:size(hist,1)
-     hist(i) = hist(i)/sum(hist(i));
+     hist(i,:) = hist(i,:)/sum(hist(i,:));
 end
 
-% next up: fix above to implement as window over each feature
-% see slide 68 :)
-% issue: magnitudes are big so overflow happens when calculating histogram?
-% --> normalize earlier?
+features = hist;
