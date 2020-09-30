@@ -1,9 +1,11 @@
 % just testing stuff lol
-A = [5 -2; -1 5];
-B = [2 0; 0 2];
+A = [0 8 4;...
+    9 3 5;...
+    1 6 11];
 
-A * B
+[descend,i] = sort(A(:),1,'descend');
+[y,x] = ind2sub(size(A), i(1:3));
+centers = [x,y]
 
-A .* B
-
-A(1, 2) % = -2
+% col = 3 1 2
+% row = 3 2 1
