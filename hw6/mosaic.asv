@@ -44,9 +44,10 @@ width = size(im2,2);
 height = size(im2,1);
 % set(gcf, 'Position', [0 0 width height]);
 canvas = zeros(3*height,3*width,3);
-canvas(height+1:2*height,width+1:2*width,1:3) = im2double(im2);
-imshow(canvas);
+canvas(height+1:2*height,width+1:2*width,1:3) = im2;
+imagesc(canvas);
+% hold on;
+% imshow(im2);
+% hold off;
+
 % apply estimated homography for all im1
-
-
-

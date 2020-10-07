@@ -12,7 +12,6 @@ for i=1:2:(numPts*2) % for each point
     pt = pt + 1; % next point
 end
 
-A
 % solve for H
 [~, ~, V] = svd(A);
 h = V(:, end); 
