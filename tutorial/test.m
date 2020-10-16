@@ -1,11 +1,6 @@
 % just testing stuff lol
-A = [0 8 4;...
-    9 3 5;...
-    1 6 11];
+A = [-2 4 4; -4 11 9; -4 9 11];
+b = [-1 1 1]';
+alphas = A\b;
 
-[descend,i] = sort(A(:),1,'descend');
-[y,x] = ind2sub(size(A), i(1:3));
-centers = [x,y]
-
-% col = 3 1 2
-% row = 3 2 1
+A = A * alphas
