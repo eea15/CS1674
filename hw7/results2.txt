@@ -1,0 +1,15 @@
+Emma Akbari (eea21) hw7
+
+d. [3 pts] Finally, in a text file results2.txt, explain what you see in your plot, and explain the trends on the training and test sets you see as k increases.
+
+In my plot, the svm trends have constant accuracy while knn train exponentially decreases and knn test slowly increases in accuracy.
+
+In terms of overall best accuracy, as k increases,from greatest to lowest, it ranks svm train, knn train, svm test, and knn test.
+
+Additionally, as k increases the accuracy slope evens out for all methods.
+
+Svm train has the highest accuracy because it because it maximizes the margin between samples, making classification more accurate.
+
+
+
+

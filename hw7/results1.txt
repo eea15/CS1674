@@ -1,0 +1,20 @@
+Emma Akbari (eea21) hw7
+
+The results were:
+
+plt_times =
+
+    0.4525
+
+
+plt0_times =
+
+    0.4150
+
+
+plt1_times =
+
+    0.3750
+
+The combined pyramid representation had the most accuracy in test predictions because pyramids tend to perform the best as opposed to single-level representations (they have more robust training input).
+The level 0 representation performed better than the level 1 representation because with strong features, single-level representation accuracy declines after a certain point.
