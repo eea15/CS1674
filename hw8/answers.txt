@@ -1,0 +1,21 @@
+Emma Akbari (eea21) hw8
+
+Q: Then, in a file answers.txt, say which weight matrix is the best one, (1) according to the hinge loss, and (2) according to the cross-entropy loss.
+
+A:
+Program output: 
+h =
+
+    1.3144    0.0288    6.9304    6.9834
+    0.4269    2.6964    0.8951    6.6308
+    6.4296    0.6867    3.9775    1.9734
+
+
+c =
+
+    0.9792    0.4496    3.0090    2.7701
+    0.6986    1.4628    0.8632    2.5973
+    2.3537    0.8717    1.6831    1.1818
+
+  (1) W2 is the best matrix, with an average loss of 1.1373.
+  (2) W2 is still the best matrix, with an average loss of 0.9280.
