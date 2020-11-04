@@ -1,5 +1,0 @@
-% Emma Akbari (eea21) hw8
-function [Output] = my_pool(Input, Pool_Size);
-% Part IV: ConvNet Operations: 2
-
-Output = zeros(
